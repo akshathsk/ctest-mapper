@@ -20,7 +20,9 @@ public class Main {
         request.setGoals(PUBLISH_GOALS);
         request.addArg("-Dtest=org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig");
         InvocationResult result = invoker.execute(request);
-        System.out.println(result);
+        System.out.println(result.getExitCode());
+        System.out.println(result.toString());
+        System.out.println(result.getExecutionException());
         if (result.getExitCode() != 0) {
             if (result.getExecutionException() != null) {
                 throw new Exception("Failed to publish site." +
