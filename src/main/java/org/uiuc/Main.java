@@ -18,6 +18,8 @@ public class Main {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile(new File(siteDirectory));
         request.setGoals(PUBLISH_GOALS);
+        SystemOutHandler systemOutHandler = new SystemOutHandler();
+        request.setOutputHandler(systemOutHandler);
         request.addArg("-Dtest=org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig");
         InvocationResult result = invoker.execute(request);
         System.out.println(result.getExitCode());
@@ -25,8 +27,12 @@ public class Main {
         System.out.println(result.getExecutionException());
         System.out.println(invoker.getLogger().toString());
         System.out.println(invoker.getLocalRepositoryDirectory());
-        System.out.println(invoker.getMavenExecutable().getAbsolutePath());
+        System.out.println("invoker.getMavenExecutable().getAbsolutePath()" + invoker.getMavenExecutable().getAbsolutePath());
         System.out.println(invoker.getMavenExecutable().toString());
+
+        System.out.println(request.getOutputHandler(systemOutHandler));
+        System.out.println("request.getOutputHandler(systemOutHandler).toString()" + request.getOutputHandler(systemOutHandler).toString());
+
         if (result.getExitCode() != 0) {
             if (result.getExecutionException() != null) {
                 throw new Exception("Failed to publish site." +
