@@ -1,26 +1,49 @@
 package org.uiuc;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
+
+    static final List<String> testCases = Arrays.asList(
+            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig",
+            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadStringTypeConfig",
+            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadIntegerTypeConfig",
+            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadBooleanTypeConfig",
+            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadSpecialStringTypeConfig"
+            );
+    static Map<String, Map<String, Map<String, Map<String, Object>>>> map = new HashMap<>();
+
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        processMvnTest();
+        int initialIndex = 0;
+        processMvnTest(initialIndex);
     }
 
-    private static void processMvnTest() throws IOException, InterruptedException {
-        Process p = null;
+    private static void processMvnTest(int index) throws IOException, InterruptedException {
 
+        if(index == testCases.size()) {
+            System.out.println(map);
+            return;
+        }
+
+        Process p = null;
+        String testCase = testCases.get(index);
         try {
-            p = Runtime.getRuntime().exec("mvn test -Dtest=org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig -DfailIfNoTests=false");
+            p = Runtime.getRuntime().exec("mvn test -Dtest=" + testCase + " -DfailIfNoTests=false");
         } catch (IOException e) {
             System.err.println("Error on exec() method");
             e.printStackTrace();
         }
         OutputStream output = new OutputStream() {
-            private StringBuilder string = new StringBuilder();
+            private final StringBuilder string = new StringBuilder();
 
             @Override
             public void write(int b) {
@@ -38,10 +61,9 @@ public class Main {
         String next = bufReader.readLine();
         while (next != null) {
             if (prev.contains("[CTEST][getModuleConfiguration]") && next.contains("[CTEST][getProviderConfiguration]")) {
-                System.out.println(prev);
-                System.out.println(next);
-                processMapping(prev, next);
-                break;
+                processMapping(testCase, prev, next);
+                index = index + 1;
+                processMvnTest(index);
             }
             prev = next;
             next = bufReader.readLine();
@@ -58,8 +80,8 @@ public class Main {
         }
     }
 
-    private static void processMapping(String module, String provider) {
-        Map<String, Map<String, Map<String, Map<String, Object>>>> map = new HashMap<>();
+    private static void processMapping(String test, String module, String provider) {
+
         String moduleExtracted = module.substring(module.indexOf("###") + 3, module.lastIndexOf("###"));
         String providerExtracted = provider.substring(provider.indexOf("###") + 3, provider.lastIndexOf("###"));
         String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
@@ -72,8 +94,8 @@ public class Main {
 
         String[] innerProp = propertiesStr.split(", ");
         Map<String, String> propMap = new HashMap<>();
-        for (int i = 0; i < innerProp.length; i++) {
-            String[] eachProp = innerProp[i].split("=");
+        for (String s : innerProp) {
+            String[] eachProp = s.split("=");
             propMap.put(eachProp[0], eachProp[1]);
         }
         Map<String, Object> configMap = new HashMap<>();
@@ -82,9 +104,9 @@ public class Main {
         }
         String[] parts = configStr.split(", ");
 
-        for (int i = 0; i < parts.length; i++) {
+        for (String part : parts) {
 
-            String[] eachConfig = parts[i].split("=");
+            String[] eachConfig = part.split("=");
             configMap.put(eachConfig[0], eachConfig[1]);
         }
 
@@ -92,7 +114,6 @@ public class Main {
         providerMap.put(providerExtracted, configMap);
         Map<String, Map<String, Map<String, Object>>> moduleMap = new HashMap<>();
         moduleMap.put(moduleExtracted, providerMap);
-        map.put("org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig", moduleMap);
-        System.out.println(map);
+        map.put(test, moduleMap);
     }
 }
