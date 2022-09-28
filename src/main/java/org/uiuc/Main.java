@@ -15,8 +15,21 @@ public class Main {
             System.err.println("Error on exec() method");
             e.printStackTrace();
         }
+        OutputStream output = new OutputStream() {
+            private StringBuilder string = new StringBuilder();
 
+            @Override
+            public void write(int b) throws IOException {
+                this.string.append((char) b );
+            }
+
+            public String toString() {
+                return this.string.toString();
+            }
+        };
         copy(p.getInputStream(), System.out);
+        copy(p.getInputStream(), output);
+        System.out.println("output.toString()" + output.toString());
         p.waitFor();
 
     }
