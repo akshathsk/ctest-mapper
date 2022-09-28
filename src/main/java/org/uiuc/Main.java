@@ -7,24 +7,18 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
-    private static final List<String> PUBLISH_GOALS = Arrays.asList("clean", "site-deploy");
+    private static final List<String> PUBLISH_GOALS = Arrays.asList("test");
     private final Invoker invoker;
 
     public Main() {
         this.invoker = new DefaultInvoker();
     }
 
-    public Main(File localRepositoryDir) {
-        Invoker newInvoker = new DefaultInvoker();
-        newInvoker.setLocalRepositoryDirectory(localRepositoryDir);
-
-        this.invoker = newInvoker;
-    }
-
     public void publishSite(String siteDirectory) throws Exception {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile(new File(siteDirectory));
         request.setGoals(PUBLISH_GOALS);
+        request.addArg("-Dtest=org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig");
         InvocationResult result = invoker.execute(request);
         System.out.println(result);
         if (result.getExitCode() != 0) {
@@ -45,6 +39,14 @@ public class Main {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+//        try {
+//            Process process = Runtime.getRuntime().exec("mvn test -Dtest=org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig -DfailIfNoTests=false");
+//            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(process.getOutputStream());
+//
+//            System.out.println(outputStreamWriter);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         System.out.println("Hello world!");
     }
 }
