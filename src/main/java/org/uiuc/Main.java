@@ -25,10 +25,10 @@ public class Main {
         System.out.println(result.getExitCode());
         System.out.println(result.toString());
         System.out.println(result.getExecutionException());
-        System.out.println(invoker.getLogger().toString());
-        System.out.println(invoker.getLocalRepositoryDirectory());
-        System.out.println("invoker.getMavenExecutable().getAbsolutePath()" + invoker.getMavenExecutable().getAbsolutePath());
-        System.out.println(invoker.getMavenExecutable().toString());
+//        System.out.println(invoker.getLogger().toString());
+//        System.out.println(invoker.getLocalRepositoryDirectory());
+//        System.out.println("invoker.getMavenExecutable().getAbsolutePath()" + invoker.getMavenExecutable().getAbsolutePath());
+//        System.out.println(invoker.getMavenExecutable().toString());
 
         System.out.println(request.getOutputHandler(systemOutHandler));
         System.out.println("request.getOutputHandler(systemOutHandler).toString()" + request.getOutputHandler(systemOutHandler).toString());
