@@ -1,8 +1,6 @@
 package org.uiuc;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,7 +32,6 @@ public class Main {
   private static void processMvnTest(int index) throws IOException, InterruptedException {
 
     if (index == testCases.size()) {
-      System.out.println(map);
       Gson gson = new Gson();
       String json = gson.toJson(map);
       System.out.println(json);
@@ -106,6 +103,20 @@ public class Main {
       }
       if (propMap.size() > 0) {
         configMap.put("properties", propMap);
+      }
+    }
+
+    if (configStr.contains("kafkaConsumerConfig={")) {
+      String kafkaConsumerConfigStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
+      configStr = configStr.replace(kafkaConsumerConfigStr, "").replace("kafkaConsumerConfig={}", "");
+      String[] innerProp = kafkaConsumerConfigStr.split(", ");
+      Map<String, String> kafkaConsumerConfigMap = new HashMap<>();
+      for (String s : innerProp) {
+        String[] eachProp = s.split("=");
+        kafkaConsumerConfigMap.put(eachProp[0], eachProp[1]);
+      }
+      if (kafkaConsumerConfigMap.size() > 0) {
+        configMap.put("kafkaConsumerConfig", kafkaConsumerConfigMap);
       }
     }
 
