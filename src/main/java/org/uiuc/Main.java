@@ -1,8 +1,6 @@
 package org.uiuc;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -27,9 +25,15 @@ public class Main {
                 return this.string.toString();
             }
         };
-//        copy(p.getInputStream(), System.out);
+
         copy(p.getInputStream(), output);
-        System.out.println("output.toString() " + output.toString());
+//        System.out.println("output.toString() " + output.toString());
+        BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
+        String line=null;
+        while( (line=bufReader.readLine()) != null )
+        {
+            System.out.println("Test here " + line);
+        }
         p.waitFor();
 
     }
@@ -39,7 +43,6 @@ public class Main {
             int c = in.read();
             if (c == -1)
                 break;
-            System.out.println("here " + (char) c);
             out.write((char) c);
         }
     }
