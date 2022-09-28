@@ -36,6 +36,7 @@ public class Main {
 
         Process p = null;
         String testCase = testCases.get(index);
+        System.out.println(testCase);
         try {
             p = Runtime.getRuntime().exec("mvn test -Dtest=" + testCase + " -DfailIfNoTests=false");
         } catch (IOException e) {
@@ -102,10 +103,11 @@ public class Main {
             }
         }
 
+        System.out.println(configStr);
         String[] parts = configStr.split(", ");
 
         for (String part : parts) {
-
+            System.out.println(part);
             String[] eachConfig = part.split("=");
             configMap.put(eachConfig[0], eachConfig[1]);
         }
