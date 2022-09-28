@@ -6,21 +6,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class Main {
+import static org.uiuc.AppConstants.*;
+import static org.uiuc.UtilHelper.copy;
 
-  static final List<String> testCases = Arrays.asList(
-          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig",
-          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadStringTypeConfig",
-          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadIntegerTypeConfig",
-          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadBooleanTypeConfig",
-          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadSpecialStringTypeConfig"
-  );
+public class Main {
   static Map<String, Map<String, Map<String, Map<String, Object>>>> map = new HashMap<>();
 
   public static void main(String[] args) throws IOException, InterruptedException {
@@ -44,7 +36,7 @@ public class Main {
     try {
       p = Runtime.getRuntime().exec("mvn test -Dtest=" + testCase + " -DfailIfNoTests=false");
     } catch (IOException e) {
-      System.err.println("Error on exec() method");
+      System.err.println(ERROR_MSG);
       e.printStackTrace();
     }
     OutputStream output = new OutputStream() {
@@ -65,7 +57,7 @@ public class Main {
     String prev = bufReader.readLine();
     String next = bufReader.readLine();
     while (next != null) {
-      if (prev.contains("[CTEST][getModuleConfiguration]") && next.contains("[CTEST][getProviderConfiguration]")) {
+      if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
         processMapping(testCase, prev, next);
         index = index + 1;
         processMvnTest(index);
@@ -76,19 +68,11 @@ public class Main {
     p.waitFor();
   }
 
-  static void copy(InputStream in, OutputStream out) throws IOException {
-    while (true) {
-      int c = in.read();
-      if (c == -1)
-        break;
-      out.write((char) c);
-    }
-  }
 
   private static void processMapping(String test, String module, String provider) {
 
-    String moduleExtracted = module.substring(module.indexOf("###") + 3, module.lastIndexOf("###"));
-    String providerExtracted = provider.substring(provider.indexOf("###") + 3, provider.lastIndexOf("###"));
+    String moduleExtracted = module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
+    String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
     Map<String, Object> configMap = new HashMap<>();
 
