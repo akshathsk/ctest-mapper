@@ -18,7 +18,7 @@ public class Main {
 
             @Override
             public void write(int b) throws IOException {
-                this.string.append((char) b );
+                this.string.append((char) b);
             }
 
             public String toString() {
@@ -27,14 +27,17 @@ public class Main {
         };
 
         copy(p.getInputStream(), output);
-//        System.out.println("output.toString() " + output.toString());
         BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
-        String line;
-        while( (line=bufReader.readLine()) != null )
-        {
-            if(line.contains("[CTEST][getModuleConfiguration]") || line.contains("[CTEST][getProviderConfiguration]")) {
-                System.out.println(line);
+        String prev = bufReader.readLine();
+        String next = bufReader.readLine();
+        while (next != null) {
+            if (prev.contains("[CTEST][getModuleConfiguration]") || next.contains("[CTEST][getProviderConfiguration]")) {
+                System.out.println(prev);
+                System.out.println(next);
+                break;
             }
+            prev = next;
+            next = bufReader.readLine();
         }
         p.waitFor();
 
