@@ -27,9 +27,9 @@ public class Main {
                 return this.string.toString();
             }
         };
-        copy(p.getInputStream(), System.out);
+//        copy(p.getInputStream(), System.out);
         copy(p.getInputStream(), output);
-        System.out.println("output.toString()" + output.toString());
+        System.out.println("output.toString() " + output.toString());
         p.waitFor();
 
     }
@@ -39,6 +39,7 @@ public class Main {
             int c = in.read();
             if (c == -1)
                 break;
+            System.out.println("here " + (char) c);
             out.write((char) c);
         }
     }
