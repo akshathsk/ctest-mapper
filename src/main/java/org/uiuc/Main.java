@@ -1,5 +1,9 @@
 package org.uiuc;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.BufferedReader;
@@ -31,7 +35,9 @@ public class Main {
 
     if (index == testCases.size()) {
       System.out.println(map);
-      System.out.println(Arrays.toString(map.entrySet().toArray()));
+      Gson gson = new Gson();
+      String json = gson.toJson(map);
+      System.out.println(json);
       return;
     }
 
@@ -105,17 +111,13 @@ public class Main {
 
     if (configStr.contains("downsampling=")) {
       String arrayStr = configStr.substring(configStr.indexOf("["), configStr.indexOf("]") + 1);
-      System.out.println(arrayStr);
       configStr = configStr.replace(arrayStr, "").replace("downsampling=,", "");
-      System.out.println(configStr);
       configMap.put("downsampling", arrayStr);
     }
 
-    System.out.println(configStr);
     String[] parts = configStr.split(", ");
 
     for (String part : parts) {
-      System.out.println(part);
       String[] eachConfig = part.split("=");
       if (eachConfig.length == 1) {
         configMap.put(eachConfig[0], "");
