@@ -86,22 +86,22 @@ public class Main {
         String providerExtracted = provider.substring(provider.indexOf("###") + 3, provider.lastIndexOf("###"));
         String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
         String propertiesStr = "";
+        Map<String, Object> configMap = new HashMap<>();
 
         if (configStr.contains("properties={")) {
             propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
             configStr = configStr.replace(propertiesStr, "").replace("properties={}", "");
+            String[] innerProp = propertiesStr.split(", ");
+            Map<String, String> propMap = new HashMap<>();
+            for (String s : innerProp) {
+                String[] eachProp = s.split("=");
+                propMap.put(eachProp[0], eachProp[1]);
+            }
+            if (propMap.size() > 0) {
+                configMap.put("properties", propMap);
+            }
         }
 
-        String[] innerProp = propertiesStr.split(", ");
-        Map<String, String> propMap = new HashMap<>();
-        for (String s : innerProp) {
-            String[] eachProp = s.split("=");
-            propMap.put(eachProp[0], eachProp[1]);
-        }
-        Map<String, Object> configMap = new HashMap<>();
-        if (propMap.size() > 0) {
-            configMap.put("properties", propMap);
-        }
         String[] parts = configStr.split(", ");
 
         for (String part : parts) {
