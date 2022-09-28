@@ -31,7 +31,7 @@ public class Main {
         String prev = bufReader.readLine();
         String next = bufReader.readLine();
         while (next != null) {
-            if (prev.contains("[CTEST][getModuleConfiguration]") || next.contains("[CTEST][getProviderConfiguration]")) {
+            if (prev.contains("[CTEST][getModuleConfiguration]") && next.contains("[CTEST][getProviderConfiguration]")) {
                 System.out.println(prev);
                 System.out.println(next);
                 break;
