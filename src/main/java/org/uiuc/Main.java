@@ -106,20 +106,6 @@ public class Main {
       }
     }
 
-    if (configStr.contains("kafkaConsumerConfig={")) {
-      String kafkaConsumerConfigStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
-      configStr = configStr.replace(kafkaConsumerConfigStr, "").replace("kafkaConsumerConfig={}", "");
-      String[] innerProp = kafkaConsumerConfigStr.split(", ");
-      Map<String, String> kafkaConsumerConfigMap = new HashMap<>();
-      for (String s : innerProp) {
-        String[] eachProp = s.split("=");
-        kafkaConsumerConfigMap.put(eachProp[0], eachProp[1]);
-      }
-      if (kafkaConsumerConfigMap.size() > 0) {
-        configMap.put("kafkaConsumerConfig", kafkaConsumerConfigMap);
-      }
-    }
-
     if (configStr.contains("downsampling=")) {
       String arrayStr = configStr.substring(configStr.indexOf("["), configStr.indexOf("]") + 1);
       configStr = configStr.replace(arrayStr, "").replace("downsampling=,", "");
