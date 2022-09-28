@@ -21,9 +21,9 @@ public class Main {
         this.invoker = newInvoker;
     }
 
-    public void publishSite(File siteDirectory) throws Exception {
+    public void publishSite(String siteDirectory) throws Exception {
         InvocationRequest request = new DefaultInvocationRequest();
-        request.setPomFile(new File("/home/sk117/final-project/apache-skywalking-apm-9.2.0/oap-server/server-starter/pom.xml"));
+        request.setPomFile(new File(siteDirectory));
         request.setGoals(PUBLISH_GOALS);
         InvocationResult result = invoker.execute(request);
         System.out.println(result);
@@ -39,8 +39,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
-
+        Main main = new Main();
+        try {
+            main.publishSite("/home/sk117/final-project/apache-skywalking-apm-9.2.0/oap-server/server-starter/pom.xml");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("Hello world!");
-
     }
 }
