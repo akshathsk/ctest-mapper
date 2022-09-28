@@ -1,64 +1,32 @@
 package org.uiuc;
 
-import org.apache.maven.shared.invoker.*;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class Main {
-    private static final List<String> PUBLISH_GOALS = Arrays.asList("test");
-    private final Invoker invoker;
+    public static void main(String[] args) throws IOException, InterruptedException {
 
-    public Main() {
-        this.invoker = new DefaultInvoker();
-    }
+        Process p = null;
 
-    public void publishSite(String siteDirectory) throws Exception {
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setPomFile(new File(siteDirectory));
-        request.setGoals(PUBLISH_GOALS);
-        SystemOutHandler systemOutHandler = new SystemOutHandler();
-        request.setOutputHandler(systemOutHandler);
-        request.addArg("-Dtest=org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig");
-        InvocationResult result = invoker.execute(request);
-        System.out.println(result.getExitCode());
-        System.out.println(result.toString());
-        System.out.println(result.getExecutionException());
-//        System.out.println(invoker.getLogger().toString());
-//        System.out.println(invoker.getLocalRepositoryDirectory());
-//        System.out.println("invoker.getMavenExecutable().getAbsolutePath()" + invoker.getMavenExecutable().getAbsolutePath());
-//        System.out.println(invoker.getMavenExecutable().toString());
-
-        System.out.println(request.getOutputHandler(systemOutHandler));
-        System.out.println("request.getOutputHandler(systemOutHandler).toString()" + request.getOutputHandler(systemOutHandler).toString());
-
-        if (result.getExitCode() != 0) {
-            if (result.getExecutionException() != null) {
-                throw new Exception("Failed to publish site." +
-                        result.getExecutionException());
-            } else {
-                throw new Exception("Failed to publish site. Exit code: " +
-                        result.getExitCode());
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        Main main = new Main();
         try {
-            main.publishSite("/home/sk117/final-project/apache-skywalking-apm-9.2.0/oap-server/server-starter/pom.xml");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            p = Runtime.getRuntime().exec("mvn test -Dtest=org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig -DfailIfNoTests=false");
+        } catch (IOException e) {
+            System.err.println("Error on exec() method");
+            e.printStackTrace();
         }
-//        try {
-//            Process process = Runtime.getRuntime().exec("mvn test -Dtest=org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig -DfailIfNoTests=false");
-//            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(process.getOutputStream());
-//
-//            System.out.println(outputStreamWriter);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-        System.out.println("Hello world!");
+
+        copy(p.getInputStream(), System.out);
+        p.waitFor();
+
+    }
+
+    static void copy(InputStream in, OutputStream out) throws IOException {
+        while (true) {
+            int c = in.read();
+            if (c == -1)
+                break;
+            out.write((char) c);
+        }
     }
 }
