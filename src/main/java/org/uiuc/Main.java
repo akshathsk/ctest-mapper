@@ -19,6 +19,7 @@ public class Main {
         request.setPomFile(new File(siteDirectory));
         request.setGoals(PUBLISH_GOALS);
         request.addArg("-Dtest=org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig");
+        request.addArg("  | tee ../../../test4.log");
         InvocationResult result = invoker.execute(request);
         System.out.println(result.getExitCode());
         System.out.println(result.toString());
