@@ -12,118 +12,122 @@ import java.util.Map;
 
 public class Main {
 
-    static final List<String> testCases = Arrays.asList(
-            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig",
-            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadStringTypeConfig",
-            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadIntegerTypeConfig",
-            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadBooleanTypeConfig",
-            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadSpecialStringTypeConfig"
-            );
-    static Map<String, Map<String, Map<String, Map<String, Object>>>> map = new HashMap<>();
+  static final List<String> testCases = Arrays.asList(
+          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig",
+          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadStringTypeConfig",
+          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadIntegerTypeConfig",
+          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadBooleanTypeConfig",
+          "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadSpecialStringTypeConfig"
+  );
+  static Map<String, Map<String, Map<String, Map<String, Object>>>> map = new HashMap<>();
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+  public static void main(String[] args) throws IOException, InterruptedException {
 
-        int initialIndex = 0;
-        processMvnTest(initialIndex);
+    int initialIndex = 0;
+    processMvnTest(initialIndex);
+  }
+
+  private static void processMvnTest(int index) throws IOException, InterruptedException {
+
+    if (index == testCases.size()) {
+      System.out.println(map);
+      System.out.println(Arrays.toString(map.entrySet().toArray()));
+      return;
     }
 
-    private static void processMvnTest(int index) throws IOException, InterruptedException {
+    Process p = null;
+    String testCase = testCases.get(index);
+    System.out.println(testCase);
+    try {
+      p = Runtime.getRuntime().exec("mvn test -Dtest=" + testCase + " -DfailIfNoTests=false");
+    } catch (IOException e) {
+      System.err.println("Error on exec() method");
+      e.printStackTrace();
+    }
+    OutputStream output = new OutputStream() {
+      private final StringBuilder string = new StringBuilder();
 
-        if(index == testCases.size()) {
-            System.out.println(map);
-            System.out.println(Arrays.toString(map.entrySet().toArray()));
-            return;
-        }
+      @Override
+      public void write(int b) {
+        this.string.append((char) b);
+      }
 
-        Process p = null;
-        String testCase = testCases.get(index);
-        System.out.println(testCase);
-        try {
-            p = Runtime.getRuntime().exec("mvn test -Dtest=" + testCase + " -DfailIfNoTests=false");
-        } catch (IOException e) {
-            System.err.println("Error on exec() method");
-            e.printStackTrace();
-        }
-        OutputStream output = new OutputStream() {
-            private final StringBuilder string = new StringBuilder();
+      public String toString() {
+        return this.string.toString();
+      }
+    };
 
-            @Override
-            public void write(int b) {
-                this.string.append((char) b);
-            }
+    copy(p.getInputStream(), output);
+    BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
+    String prev = bufReader.readLine();
+    String next = bufReader.readLine();
+    while (next != null) {
+      if (prev.contains("[CTEST][getModuleConfiguration]") && next.contains("[CTEST][getProviderConfiguration]")) {
+        processMapping(testCase, prev, next);
+        index = index + 1;
+        processMvnTest(index);
+      }
+      prev = next;
+      next = bufReader.readLine();
+    }
+    p.waitFor();
+  }
 
-            public String toString() {
-                return this.string.toString();
-            }
-        };
+  static void copy(InputStream in, OutputStream out) throws IOException {
+    while (true) {
+      int c = in.read();
+      if (c == -1)
+        break;
+      out.write((char) c);
+    }
+  }
 
-        copy(p.getInputStream(), output);
-        BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
-        String prev = bufReader.readLine();
-        String next = bufReader.readLine();
-        while (next != null) {
-            if (prev.contains("[CTEST][getModuleConfiguration]") && next.contains("[CTEST][getProviderConfiguration]")) {
-                processMapping(testCase, prev, next);
-                index = index + 1;
-                processMvnTest(index);
-            }
-            prev = next;
-            next = bufReader.readLine();
-        }
-        p.waitFor();
+  private static void processMapping(String test, String module, String provider) {
+
+    String moduleExtracted = module.substring(module.indexOf("###") + 3, module.lastIndexOf("###"));
+    String providerExtracted = provider.substring(provider.indexOf("###") + 3, provider.lastIndexOf("###"));
+    String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
+    Map<String, Object> configMap = new HashMap<>();
+
+    if (configStr.contains("properties={")) {
+      String propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
+      configStr = configStr.replace(propertiesStr, "").replace("properties={}", "");
+      String[] innerProp = propertiesStr.split(", ");
+      Map<String, String> propMap = new HashMap<>();
+      for (String s : innerProp) {
+        String[] eachProp = s.split("=");
+        propMap.put(eachProp[0], eachProp[1]);
+      }
+      if (propMap.size() > 0) {
+        configMap.put("properties", propMap);
+      }
     }
 
-    static void copy(InputStream in, OutputStream out) throws IOException {
-        while (true) {
-            int c = in.read();
-            if (c == -1)
-                break;
-            out.write((char) c);
-        }
+    if (configStr.contains("downsampling=")) {
+      String arrayStr = configStr.substring(configStr.indexOf("["), configStr.indexOf("]") + 1);
+      System.out.println(arrayStr);
+      configStr = configStr.replace(arrayStr, "").replace("downsampling=,", "");
+      System.out.println(configStr);
+      configMap.put("downsampling", arrayStr);
     }
 
-    private static void processMapping(String test, String module, String provider) {
+    System.out.println(configStr);
+    String[] parts = configStr.split(", ");
 
-        String moduleExtracted = module.substring(module.indexOf("###") + 3, module.lastIndexOf("###"));
-        String providerExtracted = provider.substring(provider.indexOf("###") + 3, provider.lastIndexOf("###"));
-        String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
-        Map<String, Object> configMap = new HashMap<>();
-
-        if (configStr.contains("properties={")) {
-            String propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
-            configStr = configStr.replace(propertiesStr, "").replace("properties={}", "");
-            String[] innerProp = propertiesStr.split(", ");
-            Map<String, String> propMap = new HashMap<>();
-            for (String s : innerProp) {
-                String[] eachProp = s.split("=");
-                propMap.put(eachProp[0], eachProp[1]);
-            }
-            if (propMap.size() > 0) {
-                configMap.put("properties", propMap);
-            }
-        }
-
-        if(configStr.contains("downsampling=")) {
-            String arrayStr = configStr.substring(configStr.indexOf("["), configStr.indexOf("]") + 1);
-            System.out.println(arrayStr);
-            configStr = configStr.replace(arrayStr, "").replace("downsampling=," , "");
-            System.out.println(configStr);
-            configMap.put("downsampling", arrayStr);
-        }
-
-        System.out.println(configStr);
-        String[] parts = configStr.split(", ");
-
-        for (String part : parts) {
-            System.out.println(part);
-            String[] eachConfig = part.split("=");
-            configMap.put(eachConfig[0], eachConfig[1]);
-        }
-
-        Map<String, Map<String, Object>> providerMap = new HashMap<>();
-        providerMap.put(providerExtracted, configMap);
-        Map<String, Map<String, Map<String, Object>>> moduleMap = new HashMap<>();
-        moduleMap.put(moduleExtracted, providerMap);
-        map.put(test, moduleMap);
+    for (String part : parts) {
+      System.out.println(part);
+      String[] eachConfig = part.split("=");
+      if (eachConfig.length == 1) {
+        configMap.put(eachConfig[0], "");
+      } else {
+        configMap.put(eachConfig[0], eachConfig[1]);
+      }
     }
+
+    Map<String, Map<String, Object>> providerMap = new HashMap<>();
+    providerMap.put(providerExtracted, configMap);
+    Map<String, Map<String, Map<String, Object>>> moduleMap = new HashMap<>();
+    moduleMap.put(moduleExtracted, providerMap);
+    map.put(test, moduleMap);
+  }
 }
