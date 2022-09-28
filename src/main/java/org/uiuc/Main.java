@@ -23,15 +23,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        String configStr = "prepareThreads=2, restHost=0.0.0.0, searchableLogsTags=level, role=Mixed, persistentPeriod=25, restIdleTimeOut=30000, dataKeeperExecutePeriod=5, topNReportPeriod=10, gRPCSslTrustedCAPath=, downsampling=[Hour, Day], serviceNameMaxLength=70";
-
-        String arrayStr = configStr.substring(configStr.indexOf("["), configStr.indexOf("]")+1);
-        System.out.println(arrayStr);
-        configStr = configStr.replace(arrayStr, "").replace("downsampling=," , "");
-        System.out.println(configStr);
-
-//        int initialIndex = 0;
-//        processMvnTest(initialIndex);
+        int initialIndex = 0;
+        processMvnTest(initialIndex);
     }
 
     private static void processMvnTest(int index) throws IOException, InterruptedException {
