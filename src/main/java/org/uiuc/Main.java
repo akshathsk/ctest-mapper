@@ -16,21 +16,29 @@ public class Main {
             "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig",
             "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadStringTypeConfig",
             "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadIntegerTypeConfig",
-//            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadBooleanTypeConfig",
+            "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadBooleanTypeConfig",
             "org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadSpecialStringTypeConfig"
             );
     static Map<String, Map<String, Map<String, Map<String, Object>>>> map = new HashMap<>();
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        int initialIndex = 0;
-        processMvnTest(initialIndex);
+        String configStr = "prepareThreads=2, restHost=0.0.0.0, searchableLogsTags=level, role=Mixed, persistentPeriod=25, restIdleTimeOut=30000, dataKeeperExecutePeriod=5, topNReportPeriod=10, gRPCSslTrustedCAPath=, downsampling=[Hour, Day], serviceNameMaxLength=70";
+
+        String arrayStr = configStr.substring(configStr.indexOf("["), configStr.indexOf("]")+1);
+        System.out.println(arrayStr);
+        configStr = configStr.replace(arrayStr, "").replace("downsampling=," , "");
+        System.out.println(configStr);
+
+//        int initialIndex = 0;
+//        processMvnTest(initialIndex);
     }
 
     private static void processMvnTest(int index) throws IOException, InterruptedException {
 
         if(index == testCases.size()) {
             System.out.println(map);
+            System.out.println(Arrays.toString(map.entrySet().toArray()));
             return;
         }
 
@@ -86,11 +94,10 @@ public class Main {
         String moduleExtracted = module.substring(module.indexOf("###") + 3, module.lastIndexOf("###"));
         String providerExtracted = provider.substring(provider.indexOf("###") + 3, provider.lastIndexOf("###"));
         String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
-        String propertiesStr = "";
         Map<String, Object> configMap = new HashMap<>();
 
         if (configStr.contains("properties={")) {
-            propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
+            String propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
             configStr = configStr.replace(propertiesStr, "").replace("properties={}", "");
             String[] innerProp = propertiesStr.split(", ");
             Map<String, String> propMap = new HashMap<>();
@@ -101,6 +108,14 @@ public class Main {
             if (propMap.size() > 0) {
                 configMap.put("properties", propMap);
             }
+        }
+
+        if(configStr.contains("downsampling=")) {
+            String arrayStr = configStr.substring(configStr.indexOf("["), configStr.indexOf("]") + 1);
+            System.out.println(arrayStr);
+            configStr = configStr.replace(arrayStr, "").replace("downsampling=," , "");
+            System.out.println(configStr);
+            configMap.put("downsampling", arrayStr);
         }
 
         System.out.println(configStr);
