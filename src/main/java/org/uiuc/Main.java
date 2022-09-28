@@ -29,10 +29,12 @@ public class Main {
         copy(p.getInputStream(), output);
 //        System.out.println("output.toString() " + output.toString());
         BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
-        String line=null;
+        String line;
         while( (line=bufReader.readLine()) != null )
         {
-            System.out.println("Test here " + line);
+            if(line.contains("[CTEST][getModuleConfiguration]") || line.contains("[CTEST][getProviderConfiguration]")) {
+                System.out.println(line);
+            }
         }
         p.waitFor();
 
