@@ -64,7 +64,6 @@ public class Main {
         storeProvider = new StringBuilder(next);
       }
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
-        System.out.println("abcabc " + storeModule + " " + storeProvider + " " + next);
         processMapping(testCase, storeModule.toString(), storeProvider.toString(), next);
       }
       prev = next;
@@ -82,6 +81,9 @@ public class Main {
     String moduleExtracted = module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
     String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
     String propertyKey = propKey.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
+
+    System.out.println("abcabc " + moduleExtracted + " " + providerExtracted + " " + propertyKey);
+
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
     Map<String, Object> configMap = new HashMap<>();
 
