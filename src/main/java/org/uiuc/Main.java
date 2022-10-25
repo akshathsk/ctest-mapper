@@ -89,9 +89,7 @@ public class Main {
       Map<String, String> propMap = new HashMap<>();
       for (String s : innerProp) {
         String[] eachProp = s.split("=");
-        if (propertyKey.equals(eachProp[0])) {
-          propMap.put(eachProp[0], eachProp[1]);
-        }
+        propMap.put(eachProp[0], eachProp[1]);
       }
       if (propMap.size() > 0) {
         configMap.put("properties", propMap);
@@ -111,7 +109,9 @@ public class Main {
       if (eachConfig.length == 1) {
         configMap.put(eachConfig[0], "");
       } else {
-        configMap.put(eachConfig[0], eachConfig[1]);
+        if (propertyKey.equals(eachConfig[0])) {
+          configMap.put(eachConfig[0], eachConfig[1]);
+        }
       }
     }
 
