@@ -56,21 +56,23 @@ public class Main {
     BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
     String prev = bufReader.readLine();
     String next = bufReader.readLine();
-    String storeModule = null;
-    String storeProvider = null;
+    StringBuilder storeModule = new StringBuilder();
+    StringBuilder storeProvider = new StringBuilder();
     while (next != null) {
       if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
-        storeModule = prev;
-        storeProvider = next;
+        storeModule = new StringBuilder(prev);
+        storeProvider = new StringBuilder(next);
       }
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
-        processMapping(testCase, storeModule, storeProvider, next);
-        index = index + 1;
-        processMvnTest(index);
+        processMapping(testCase, storeModule.toString(), storeProvider.toString(), next);
       }
       prev = next;
       next = bufReader.readLine();
     }
+    storeModule = null;
+    storeProvider = null;
+    index = index + 1;
+    processMvnTest(index);
     p.waitFor();
   }
 
