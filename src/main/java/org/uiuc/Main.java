@@ -110,7 +110,6 @@ public class Main {
       if (eachConfig.length == 1 && propertyKey.equals(eachConfig[0])) {
         configMap.put(eachConfig[0], "");
       } else {
-        System.out.println(propertyKey + " " + eachConfig[0]);
         if (propertyKey.equals(eachConfig[0])) {
           configMap.put(eachConfig[0], eachConfig[1]);
         }
