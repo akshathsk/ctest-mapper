@@ -83,7 +83,7 @@ public class Main {
 
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
 
-    if (configStr.contains("properties={")) {
+    if (configStr.contains("properties={") && propertyKey.equals("properties")) {
       String propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
       configStr = configStr.replace(propertiesStr, "").replace("properties={}", "");
       String[] innerProp = propertiesStr.split(", ");
