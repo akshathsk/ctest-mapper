@@ -112,7 +112,6 @@ public class Main {
       } else {
         System.out.println(propertyKey + " " + eachConfig[0]);
         if (propertyKey.equals(eachConfig[0])) {
-          System.out.println("here");
           configMap.put(eachConfig[0], eachConfig[1]);
         }
       }
