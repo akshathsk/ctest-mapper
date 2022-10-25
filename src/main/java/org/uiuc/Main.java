@@ -64,6 +64,7 @@ public class Main {
         storeProvider = new StringBuilder(next);
       }
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
+        System.out.println("abcabc " + storeModule + " " + storeProvider + " " + next);
         processMapping(testCase, storeModule.toString(), storeProvider.toString(), next);
       }
       prev = next;
