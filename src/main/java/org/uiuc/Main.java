@@ -58,32 +58,30 @@ public class Main {
     String next = bufReader.readLine();
     StringBuilder storeModule = new StringBuilder();
     StringBuilder storeProvider = new StringBuilder();
+    Map<String, Object> configMap = new HashMap<>();
     while (next != null) {
       if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
         storeModule = new StringBuilder(prev);
         storeProvider = new StringBuilder(next);
       }
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
-        processMapping(testCase, storeModule.toString(), storeProvider.toString(), next);
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next);
       }
       prev = next;
       next = bufReader.readLine();
     }
-    storeModule = null;
-    storeProvider = null;
     index = index + 1;
     processMvnTest(index);
     p.waitFor();
   }
 
-  private static void processMapping(String test, String module, String provider, String propKey) {
+  private static void processMapping(String test, Map<String, Object> configMap, String module, String provider, String propKey) {
 
     String moduleExtracted = module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
     String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
     String propertyKey = propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
 
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
-    Map<String, Object> configMap = new HashMap<>();
 
     if (configStr.contains("properties={")) {
       String propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
