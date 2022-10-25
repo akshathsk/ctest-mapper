@@ -80,7 +80,7 @@ public class Main {
 
     String moduleExtracted = module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
     String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
-    String propertyKey = propKey.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
+    String propertyKey = propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
 
     System.out.println("abcabc " + moduleExtracted + " " + providerExtracted + " " + propertyKey);
 
