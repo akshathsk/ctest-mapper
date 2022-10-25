@@ -65,6 +65,7 @@ public class Main {
         storeProvider = itr;
       }
       if (itr.contains(CTEST_PROPERTY_WRAPPER)) {
+        System.out.println(testCase + " " + storeModule + " " + storeProvider + " " + itr);
         processMapping(testCase, storeModule, storeProvider, itr);
         index = index + 1;
         processMvnTest(index);
