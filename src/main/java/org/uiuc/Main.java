@@ -97,7 +97,7 @@ public class Main {
       }
     }
 
-    if (configStr.contains("downsampling=")) {
+    if (configStr.contains("downsampling=") && propertyKey.equals("downsampling")) {
       String arrayStr = configStr.substring(configStr.indexOf("["), configStr.indexOf("]") + 1);
       configStr = configStr.replace(arrayStr, "").replace("downsampling=,", "");
       configMap.put("downsampling", arrayStr);
@@ -107,7 +107,7 @@ public class Main {
 
     for (String part : parts) {
       String[] eachConfig = part.split("=");
-      if (eachConfig.length == 1) {
+      if (eachConfig.length == 1 && propertyKey.equals(eachConfig[0])) {
         configMap.put(eachConfig[0], "");
       } else {
         System.out.println(propertyKey + " " + eachConfig[0]);
