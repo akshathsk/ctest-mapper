@@ -53,28 +53,23 @@ public class Main {
     };
 
     copy(p.getInputStream(), output);
-//    System.out.println(output);
     BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
-    String itr = bufReader.readLine();
+    String prev = bufReader.readLine();
+    String next = bufReader.readLine();
     String storeModule = null;
     String storeProvider = null;
-    while (itr != null) {
-      System.out.println(itr);
-      if (itr.contains(CTEST_MODULE)) {
-        System.out.println(CTEST_MODULE);
-        storeModule = itr;
+    while (next != null) {
+      if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
+        storeModule = prev;
+        storeProvider = next;
       }
-      if (itr.contains(CTEST_PROVIDER)) {
-        System.out.println(CTEST_PROVIDER);
-        storeProvider = itr;
-      }
-      if (itr.contains(CTEST_PROPERTY_WRAPPER)) {
-        System.out.println(testCase + " " + storeModule + " " + storeProvider + " " + itr);
-        processMapping(testCase, storeModule, storeProvider, itr);
+      if (next.contains(CTEST_PROPERTY_WRAPPER)) {
+        processMapping(testCase, storeModule, storeProvider, next);
         index = index + 1;
         processMvnTest(index);
       }
-      itr = bufReader.readLine();
+      prev = next;
+      next = bufReader.readLine();
     }
     p.waitFor();
   }
