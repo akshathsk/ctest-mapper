@@ -2,9 +2,9 @@ package org.uiuc;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,25 +54,31 @@ public class Main {
 
     copy(p.getInputStream(), output);
     BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
-    String prev = bufReader.readLine();
-    String next = bufReader.readLine();
-    while (next != null) {
-      if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
-        processMapping(testCase, prev, next);
+    String itr = bufReader.readLine();
+    String storeModule = null;
+    String storeProvider = null;
+    while (itr != null) {
+      if (itr.contains(CTEST_MODULE)) {
+        storeModule = itr;
+      }
+      if (itr.contains(CTEST_PROVIDER)) {
+        storeProvider = itr;
+      }
+      if (itr.contains(CTEST_PROPERTY_WRAPPER)) {
+        processMapping(testCase, storeModule, storeProvider, itr);
         index = index + 1;
         processMvnTest(index);
       }
-      prev = next;
-      next = bufReader.readLine();
+      itr = bufReader.readLine();
     }
     p.waitFor();
   }
 
-
-  private static void processMapping(String test, String module, String provider) {
+  private static void processMapping(String test, String module, String provider, String propKey) {
 
     String moduleExtracted = module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
     String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
+    String propertyKey = propKey.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
     Map<String, Object> configMap = new HashMap<>();
 
@@ -83,7 +89,9 @@ public class Main {
       Map<String, String> propMap = new HashMap<>();
       for (String s : innerProp) {
         String[] eachProp = s.split("=");
-        propMap.put(eachProp[0], eachProp[1]);
+        if (propertyKey.equals(eachProp[0])) {
+          propMap.put(eachProp[0], eachProp[1]);
+        }
       }
       if (propMap.size() > 0) {
         configMap.put("properties", propMap);
