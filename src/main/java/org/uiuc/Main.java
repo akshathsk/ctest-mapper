@@ -82,8 +82,6 @@ public class Main {
     String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
     String propertyKey = propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
 
-    System.out.println("abcabc " + moduleExtracted + " " + providerExtracted + " " + propertyKey);
-
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
     Map<String, Object> configMap = new HashMap<>();
 
@@ -114,6 +112,7 @@ public class Main {
       if (eachConfig.length == 1) {
         configMap.put(eachConfig[0], "");
       } else {
+        System.out.println("propertyKey " + eachConfig[0]);
         if (propertyKey.equals(eachConfig[0])) {
           configMap.put(eachConfig[0], eachConfig[1]);
         }
