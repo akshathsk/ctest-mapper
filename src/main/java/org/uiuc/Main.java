@@ -53,12 +53,13 @@ public class Main {
     };
 
     copy(p.getInputStream(), output);
-    System.out.println(output);
+//    System.out.println(output);
     BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
     String itr = bufReader.readLine();
     String storeModule = null;
     String storeProvider = null;
     while (itr != null) {
+      System.out.println(itr);
       if (itr.contains(CTEST_MODULE)) {
         System.out.println(CTEST_MODULE);
         storeModule = itr;
