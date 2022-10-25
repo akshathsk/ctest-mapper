@@ -53,16 +53,18 @@ public class Main {
     };
 
     copy(p.getInputStream(), output);
+    System.out.println(output);
     BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
     String itr = bufReader.readLine();
-    System.out.println(itr);
     String storeModule = null;
     String storeProvider = null;
     while (itr != null) {
       if (itr.contains(CTEST_MODULE)) {
+        System.out.println(CTEST_MODULE);
         storeModule = itr;
       }
       if (itr.contains(CTEST_PROVIDER)) {
+        System.out.println(CTEST_PROVIDER);
         storeProvider = itr;
       }
       if (itr.contains(CTEST_PROPERTY_WRAPPER)) {
