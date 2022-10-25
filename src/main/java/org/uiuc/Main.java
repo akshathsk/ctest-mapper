@@ -55,6 +55,7 @@ public class Main {
     copy(p.getInputStream(), output);
     BufferedReader bufReader = new BufferedReader(new StringReader(output.toString()));
     String itr = bufReader.readLine();
+    System.out.println(itr);
     String storeModule = null;
     String storeProvider = null;
     while (itr != null) {
