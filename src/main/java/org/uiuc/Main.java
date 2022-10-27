@@ -59,8 +59,8 @@ public class Main {
     StringBuilder storeProvider = new StringBuilder();
     StringBuilder storeProperty = new StringBuilder();
     Map<String, Object> configMap = new LinkedHashMap<>();
+
     while (next != null) {
-      System.out.println(next);
       if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
         storeModule = new StringBuilder(prev);
         storeProvider = new StringBuilder(next);
