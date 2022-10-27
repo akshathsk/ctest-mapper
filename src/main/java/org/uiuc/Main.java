@@ -87,8 +87,6 @@ public class Main {
     String propKeyExtracted = propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
     String subPropKeyExtracted = (subPropKey == null) ? null : subPropKey.substring(subPropKey.indexOf(SEPARATOR) + 3, subPropKey.lastIndexOf(SEPARATOR));
 
-    System.out.println(moduleExtracted + " " + providerExtracted + " " + propKeyExtracted + " " + subPropKeyExtracted);
-
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
 
     if (configStr.contains("properties={") && propKeyExtracted.equals("properties") && subPropKeyExtracted != null) {
