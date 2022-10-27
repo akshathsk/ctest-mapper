@@ -67,12 +67,10 @@ public class Main {
         storeProvider = new StringBuilder(next);
       }
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
-        System.out.println("here1");
         storeProperty = new StringBuilder(next);
         processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next, null);
       }
       if (next.contains(CTEST_SUB_PROPERTY_WRAPPER)) {
-        System.out.println("here2");
         processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), storeProperty.toString(), next);
       }
       prev = next;
@@ -85,7 +83,6 @@ public class Main {
 
   private static void processMapping(String test, Map<String, Object> configMap, String module, String provider, String propKey, String subPropKey) {
 
-    System.out.println("here3");
     String moduleExtracted = module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
     String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
     String propKeyExtracted = propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
