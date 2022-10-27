@@ -6,14 +6,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.uiuc.AppConstants.*;
 import static org.uiuc.UtilHelper.copy;
 
 public class Main {
-  static Map<String, Map<String, Map<String, Map<String, Object>>>> map = new HashMap<>();
+  static Map<String, Map<String, Map<String, Map<String, Object>>>> map = new LinkedHashMap<>();
 
   public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -32,7 +32,6 @@ public class Main {
 
     Process p = null;
     String testCase = testCases.get(index);
-    System.out.println(testCase);
     try {
       p = Runtime.getRuntime().exec("mvn test -Dtest=" + testCase + " -DfailIfNoTests=false");
     } catch (IOException e) {
@@ -59,7 +58,7 @@ public class Main {
     StringBuilder storeModule = new StringBuilder();
     StringBuilder storeProvider = new StringBuilder();
     StringBuilder storeProperty = new StringBuilder();
-    Map<String, Object> configMap = new HashMap<>();
+    Map<String, Object> configMap = new LinkedHashMap<>();
     while (next != null) {
       System.out.println(next);
       if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
@@ -96,7 +95,7 @@ public class Main {
       String propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
       configStr = configStr.replace(propertiesStr, "").replace("properties={}", "");
       String[] innerProp = propertiesStr.split(", ");
-      Map<String, String> propMap = new HashMap<>();
+      Map<String, String> propMap = new LinkedHashMap<>();
       for (String s : innerProp) {
         String[] eachProp = s.split("=");
         if (subPropKeyExtracted.equals(eachProp[0])) {
@@ -127,9 +126,9 @@ public class Main {
       }
     }
 
-    Map<String, Map<String, Object>> providerMap = new HashMap<>();
+    Map<String, Map<String, Object>> providerMap = new LinkedHashMap<>();
     providerMap.put(providerExtracted, configMap);
-    Map<String, Map<String, Map<String, Object>>> moduleMap = new HashMap<>();
+    Map<String, Map<String, Map<String, Object>>> moduleMap = new LinkedHashMap<>();
     moduleMap.put(moduleExtracted, providerMap);
     map.put(test, moduleMap);
   }
