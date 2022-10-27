@@ -58,6 +58,7 @@ public class Main {
     String next = bufReader.readLine();
     StringBuilder storeModule = new StringBuilder();
     StringBuilder storeProvider = new StringBuilder();
+    StringBuilder storeProperty = new StringBuilder();
     Map<String, Object> configMap = new HashMap<>();
     while (next != null) {
       if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
@@ -65,7 +66,11 @@ public class Main {
         storeProvider = new StringBuilder(next);
       }
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
-        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next);
+        storeProperty = new StringBuilder(next);
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next, null);
+      }
+      if (next.contains(CTEST_SUB_PROPERTY_WRAPPER)) {
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), storeProperty.toString(), next);
       }
       prev = next;
       next = bufReader.readLine();
@@ -75,29 +80,32 @@ public class Main {
     p.waitFor();
   }
 
-  private static void processMapping(String test, Map<String, Object> configMap, String module, String provider, String propKey) {
+  private static void processMapping(String test, Map<String, Object> configMap, String module, String provider, String propKey, String subPropKey) {
 
     String moduleExtracted = module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
     String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
-    String propertyKey = propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
+    String propKeyExtracted = propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
+    String subPropKeyExtracted = (subPropKey == null) ? null : subPropKey.substring(subPropKey.indexOf(SEPARATOR) + 3, subPropKey.lastIndexOf(SEPARATOR));
 
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
 
-    if (configStr.contains("properties={") && propertyKey.equals("properties")) {
+    if (configStr.contains("properties={") && propKeyExtracted.equals("properties") && subPropKeyExtracted != null) {
       String propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
       configStr = configStr.replace(propertiesStr, "").replace("properties={}", "");
       String[] innerProp = propertiesStr.split(", ");
       Map<String, String> propMap = new HashMap<>();
       for (String s : innerProp) {
         String[] eachProp = s.split("=");
-        propMap.put(eachProp[0], eachProp[1]);
+        if (subPropKeyExtracted.equals(eachProp[0])) {
+          propMap.put(eachProp[0], eachProp[1]);
+        }
       }
       if (propMap.size() > 0) {
         configMap.put("properties", propMap);
       }
     }
 
-    if (configStr.contains("downsampling=") && propertyKey.equals("downsampling")) {
+    if (configStr.contains("downsampling=") && propKeyExtracted.equals("downsampling")) {
       String arrayStr = configStr.substring(configStr.indexOf("["), configStr.indexOf("]") + 1);
       configStr = configStr.replace(arrayStr, "").replace("downsampling=,", "");
       configMap.put("downsampling", arrayStr);
@@ -107,10 +115,10 @@ public class Main {
 
     for (String part : parts) {
       String[] eachConfig = part.split("=");
-      if (eachConfig.length == 1 && propertyKey.equals(eachConfig[0])) {
+      if (eachConfig.length == 1 && propKeyExtracted.equals(eachConfig[0])) {
         configMap.put(eachConfig[0], "");
       } else {
-        if (propertyKey.equals(eachConfig[0])) {
+        if (propKeyExtracted.equals(eachConfig[0])) {
           configMap.put(eachConfig[0], eachConfig[1]);
         }
       }

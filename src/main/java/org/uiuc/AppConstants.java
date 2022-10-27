@@ -19,5 +19,8 @@ public interface AppConstants {
   String CTEST_PROVIDER = "[CTEST][getProviderConfiguration]";
 
   String CTEST_PROPERTY_WRAPPER = "[CTEST][PropertiesWrapper]";
+
+  String CTEST_SUB_PROPERTY_WRAPPER = "[CTEST][SubPropertiesWrapper]";
+
   String SEPARATOR = "###";
 }
