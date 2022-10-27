@@ -61,6 +61,7 @@ public class Main {
     StringBuilder storeProperty = new StringBuilder();
     Map<String, Object> configMap = new HashMap<>();
     while (next != null) {
+      System.out.println(next);
       if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
         storeModule = new StringBuilder(prev);
         storeProvider = new StringBuilder(next);
