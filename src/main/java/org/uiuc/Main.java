@@ -94,22 +94,22 @@ public class Main {
   private static void processMapping(String test, Map<String, Object> configMap, String module, String provider,
       String propKey, String subPropKey, String resetProp, String resetSubProp) {
 
-    String moduleExtracted =
-        (module == null) ? null : module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
+    String moduleExtracted = (module == null || module.isEmpty()) ? null
+        : module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
 
-    String providerExtracted = (provider == null) ? null
+    String providerExtracted = (provider == null || provider.isEmpty()) ? null
         : provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
 
-    String propKeyExtracted = (propKey == null) ? null
+    String propKeyExtracted = (propKey == null || propKey.isEmpty()) ? null
         : propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
 
-    String subPropKeyExtracted = (subPropKey == null) ? null
+    String subPropKeyExtracted = (subPropKey == null || subPropKey.isEmpty()) ? null
         : subPropKey.substring(subPropKey.indexOf(SEPARATOR) + 3, subPropKey.lastIndexOf(SEPARATOR));
 
-    String resetPropKey = (resetProp == null) ? null
+    String resetPropKey = (resetProp == null || resetProp.isEmpty()) ? null
         : resetProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetProp.lastIndexOf(SEPARATOR));
 
-    String resetPropValue = (resetProp == null) ? null
+    String resetPropValue = (resetProp == null || resetProp.isEmpty()) ? null
         : resetProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
             resetProp.lastIndexOf(SEPARATOR_ASTERISK));
 
@@ -120,9 +120,9 @@ public class Main {
       return;
     }
 
-    String resetSubPropKey = (resetSubProp == null) ? null
+    String resetSubPropKey = (resetSubProp == null || resetSubProp.isEmpty()) ? null
         : resetSubProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetSubProp.lastIndexOf(SEPARATOR));
-    String resetSubPropValue = (resetSubProp == null) ? null
+    String resetSubPropValue = (resetSubProp == null || resetSubProp.isEmpty()) ? null
         : resetSubProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
             resetSubProp.lastIndexOf(SEPARATOR_ASTERISK));
 
