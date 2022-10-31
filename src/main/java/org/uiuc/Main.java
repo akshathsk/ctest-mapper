@@ -113,6 +113,8 @@ public class Main {
         : resetProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
             resetProp.lastIndexOf(SEPARATOR_ASTERISK));
 
+    System.out.println(test + " " + moduleExtracted + " " + providerExtracted + " " + propKeyExtracted + " " + resetPropKey);
+
     if (resetProp != null && map.containsKey(test) && module != null && map.get(test).containsKey(module)
         && provider != null && map.get(test).get(module).containsKey(provider) && map.get(test).get(module)
         .get(provider).containsKey(resetPropKey)) {
