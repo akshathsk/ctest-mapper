@@ -67,10 +67,16 @@ public class Main {
       }
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
         storeProperty = new StringBuilder(next);
-        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next, null);
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next, null, null, null);
       }
       if (next.contains(CTEST_SUB_PROPERTY_WRAPPER)) {
-        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), storeProperty.toString(), next);
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), storeProperty.toString(), next, null, null);
+      }
+      if (next.contains(CTEST_PROPERTY_RESET_WRAPPER)) {
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), null, null, next, null);
+      }
+      if (next.contains(CTEST_SUB_PROPERTY_RESET_WRAPPER)) {
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), storeProperty.toString(), next, null, next);
       }
       prev = next;
       next = bufReader.readLine();
@@ -80,12 +86,26 @@ public class Main {
     p.waitFor();
   }
 
-  private static void processMapping(String test, Map<String, Object> configMap, String module, String provider, String propKey, String subPropKey) {
+  private static void processMapping(String test, Map<String, Object> configMap, String module, String provider, String propKey, String subPropKey, String resetProp, String resetSubProp) {
 
     String moduleExtracted = module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
     String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
     String propKeyExtracted = propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
     String subPropKeyExtracted = (subPropKey == null) ? null : subPropKey.substring(subPropKey.indexOf(SEPARATOR) + 3, subPropKey.lastIndexOf(SEPARATOR));
+
+    String resetPropKey = (resetProp == null) ? null : resetProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetProp.lastIndexOf(SEPARATOR));
+    String resetPropValue = (resetProp == null) ? null : resetProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3, resetProp.lastIndexOf(SEPARATOR_ASTERISK));
+    if (resetPropKey != null) {
+      map.get(test).get(module).get(provider).put(resetPropKey, resetPropValue);
+      return;
+    }
+
+    String resetSubPropKey = (resetSubProp == null) ? null : resetSubProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetSubProp.lastIndexOf(SEPARATOR));
+    String resetSubPropValue = (resetSubProp == null) ? null : resetSubProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3, resetSubProp.lastIndexOf(SEPARATOR_ASTERISK));
+    if (resetSubPropKey != null) {
+      ((Map) map.get(test).get(module).get(provider).get("properties")).put(resetSubPropKey, resetSubPropValue);
+      return;
+    }
 
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
 

@@ -20,7 +20,11 @@ public interface AppConstants {
 
   String CTEST_PROPERTY_WRAPPER = "[CTEST][PropertiesWrapper]";
 
+  String CTEST_PROPERTY_RESET_WRAPPER = "[CTEST][PropertiesWrapper-reset]";
+
   String CTEST_SUB_PROPERTY_WRAPPER = "[CTEST][SubPropertiesWrapper]";
 
+  String CTEST_SUB_PROPERTY_RESET_WRAPPER = "[CTEST][SubPropertiesWrapper-reset]";
   String SEPARATOR = "###";
+  String SEPARATOR_ASTERISK = "***";
 }
