@@ -13,6 +13,7 @@ import static org.uiuc.AppConstants.*;
 import static org.uiuc.UtilHelper.copy;
 
 public class Main {
+
   static Map<String, Map<String, Map<String, Map<String, Object>>>> map = new LinkedHashMap<>();
 
   public static void main(String[] args) throws IOException, InterruptedException {
@@ -67,16 +68,20 @@ public class Main {
       }
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
         storeProperty = new StringBuilder(next);
-        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next, null, null, null);
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next, null, null,
+            null);
       }
       if (next.contains(CTEST_SUB_PROPERTY_WRAPPER)) {
-        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), storeProperty.toString(), next, null, null);
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(),
+            storeProperty.toString(), next, null, null);
       }
       if (next.contains(CTEST_PROPERTY_RESET_WRAPPER)) {
-        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), null, null, next, null);
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), null, null, next,
+            null);
       }
       if (next.contains(CTEST_SUB_PROPERTY_RESET_WRAPPER)) {
-        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), storeProperty.toString(), next, null, next);
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(),
+            storeProperty.toString(), next, null, next);
       }
       prev = next;
       next = bufReader.readLine();
@@ -86,30 +91,52 @@ public class Main {
     p.waitFor();
   }
 
-  private static void processMapping(String test, Map<String, Object> configMap, String module, String provider, String propKey, String subPropKey, String resetProp, String resetSubProp) {
+  private static void processMapping(String test, Map<String, Object> configMap, String module, String provider,
+      String propKey, String subPropKey, String resetProp, String resetSubProp) {
 
-    String moduleExtracted = module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
-    String providerExtracted = provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
-    String propKeyExtracted = propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
-    String subPropKeyExtracted = (subPropKey == null) ? null : subPropKey.substring(subPropKey.indexOf(SEPARATOR) + 3, subPropKey.lastIndexOf(SEPARATOR));
+    String moduleExtracted =
+        (module == null) ? null : module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
 
-    String resetPropKey = (resetProp == null) ? null : resetProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetProp.lastIndexOf(SEPARATOR));
-    String resetPropValue = (resetProp == null) ? null : resetProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3, resetProp.lastIndexOf(SEPARATOR_ASTERISK));
-    if (resetPropKey != null) {
+    String providerExtracted = (provider == null) ? null
+        : provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
+
+    String propKeyExtracted = (propKey == null) ? null
+        : propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
+
+    String subPropKeyExtracted = (subPropKey == null) ? null
+        : subPropKey.substring(subPropKey.indexOf(SEPARATOR) + 3, subPropKey.lastIndexOf(SEPARATOR));
+
+    String resetPropKey = (resetProp == null) ? null
+        : resetProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetProp.lastIndexOf(SEPARATOR));
+
+    String resetPropValue = (resetProp == null) ? null
+        : resetProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
+            resetProp.lastIndexOf(SEPARATOR_ASTERISK));
+
+    if (resetProp != null && map.containsKey(test) && module != null && map.get(test).containsKey(module)
+        && provider != null && map.get(test).get(module).containsKey(provider) && map.get(test).get(module)
+        .get(provider).containsKey(resetPropKey)) {
       map.get(test).get(module).get(provider).put(resetPropKey, resetPropValue);
       return;
     }
 
-    String resetSubPropKey = (resetSubProp == null) ? null : resetSubProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetSubProp.lastIndexOf(SEPARATOR));
-    String resetSubPropValue = (resetSubProp == null) ? null : resetSubProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3, resetSubProp.lastIndexOf(SEPARATOR_ASTERISK));
-    if (resetSubPropKey != null) {
+    String resetSubPropKey = (resetSubProp == null) ? null
+        : resetSubProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetSubProp.lastIndexOf(SEPARATOR));
+    String resetSubPropValue = (resetSubProp == null) ? null
+        : resetSubProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
+            resetSubProp.lastIndexOf(SEPARATOR_ASTERISK));
+
+    if (resetSubPropKey != null && map.containsKey(test) && module != null && map.get(test).containsKey(module)
+        && provider != null && map.get(test).get(module).containsKey(provider) && map.get(test).get(module)
+        .get(provider).containsKey(resetSubPropKey)) {
       ((Map) map.get(test).get(module).get(provider).get("properties")).put(resetSubPropKey, resetSubPropValue);
       return;
     }
 
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
 
-    if (configStr.contains("properties={") && propKeyExtracted.equals("properties") && subPropKeyExtracted != null) {
+    if (configStr.contains("properties={") && propKeyExtracted.equals("properties")
+        && subPropKeyExtracted != null) {
       String propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
       configStr = configStr.replace(propertiesStr, "").replace("properties={}", "");
       String[] innerProp = propertiesStr.split(", ");
@@ -150,4 +177,6 @@ public class Main {
     moduleMap.put(moduleExtracted, providerMap);
     map.put(test, moduleMap);
   }
+
+
 }
