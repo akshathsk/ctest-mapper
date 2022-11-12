@@ -65,9 +65,12 @@ public class Main {
       if (prev.contains(CTEST_MODULE) && next.contains(CTEST_PROVIDER)) {
         storeModule = new StringBuilder(prev);
         storeProvider = new StringBuilder(next);
+        System.out.println("Module123" + storeModule);
+        System.out.println("Provider123" + storeProvider);
       }
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
         storeProperty = new StringBuilder(next);
+        System.out.println("Property123" + storeProperty);
         processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next, null, null,
             null);
       }
@@ -96,22 +99,28 @@ public class Main {
 
     String moduleExtracted = (module == null || module.isEmpty()) ? null
         : module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
+    System.out.println("moduleExtracted" + moduleExtracted);
 
     String providerExtracted = (provider == null || provider.isEmpty()) ? null
         : provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
+    System.out.println("providerExtracted" + providerExtracted);
 
     String propKeyExtracted = (propKey == null || propKey.isEmpty()) ? null
         : propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
+    System.out.println("propKeyExtracted" + propKeyExtracted);
 
     String subPropKeyExtracted = (subPropKey == null || subPropKey.isEmpty()) ? null
         : subPropKey.substring(subPropKey.indexOf(SEPARATOR) + 3, subPropKey.lastIndexOf(SEPARATOR));
+    System.out.println("subPropKeyExtracted" + subPropKeyExtracted);
 
     String resetPropKey = (resetProp == null || resetProp.isEmpty()) ? null
         : resetProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetProp.lastIndexOf(SEPARATOR));
+    System.out.println("resetPropKey" + resetPropKey);
 
     String resetPropValue = (resetProp == null || resetProp.isEmpty()) ? null
         : resetProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
             resetProp.lastIndexOf(SEPARATOR_ASTERISK));
+    System.out.println("resetPropValue" + resetPropValue);
 
     if(moduleExtracted == null && providerExtracted == null) {
       return;
