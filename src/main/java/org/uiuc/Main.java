@@ -75,14 +75,14 @@ public class Main {
         processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(),
             storeProperty.toString(), next, null, null);
       }
-//      if (next.contains(CTEST_PROPERTY_RESET_WRAPPER)) {
-//        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), null, null, next,
-//            null);
-//      }
-//      if (next.contains(CTEST_SUB_PROPERTY_RESET_WRAPPER)) {
-//        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(),
-//            storeProperty.toString(), next, null, next);
-//      }
+      if (next.contains(CTEST_PROPERTY_RESET_WRAPPER)) {
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), null, null, next,
+            null);
+      }
+      if (next.contains(CTEST_SUB_PROPERTY_RESET_WRAPPER)) {
+        processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(),
+            storeProperty.toString(), next, null, next);
+      }
       prev = next;
       next = bufReader.readLine();
     }
