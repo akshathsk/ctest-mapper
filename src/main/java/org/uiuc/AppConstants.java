@@ -13,8 +13,9 @@ public interface AppConstants {
 //          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadSpecialStringTypeConfig",
 //          "oap-server/server-configuration/configuration-apollo>org.apache.skywalking.oap.server.configuration.apollo.ITApolloConfigurationTest#shouldReadUpdated",
 //          "oap-server/server-configuration/configuration-apollo>org.apache.skywalking.oap.server.configuration.apollo.ITApolloConfigurationTest#shouldReadUpdated4Group",
-          "oap-server/server-configuration/configuration-consul>org.apache.skywalking.oap.server.configuration.consul.ITConsulConfigurationTest#shouldReadUpdated"
+//          "oap-server/server-configuration/configuration-consul>org.apache.skywalking.oap.server.configuration.consul.ITConsulConfigurationTest#shouldReadUpdated"
 //          "oap-server/server-configuration/configuration-consul>org.apache.skywalking.oap.server.configuration.consul.ITConsulConfigurationTest#shouldReadUpdated4Group"
+          "oap-server/server-configuration/configuration-etcd>org.apache.skywalking.oap.server.configuration.etcd.ITEtcdConfigurationTest#shouldReadUpdated"
   );
 
   String ERROR_MSG = "Error on exec() method";
