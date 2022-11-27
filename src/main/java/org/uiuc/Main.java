@@ -37,6 +37,7 @@ public class Main {
     }
 
     Process p = null;
+    System.out.println(map);
     String test = testCases.get(index);
     String[] split = test.split(">");
     String module = split[0];
@@ -102,60 +103,6 @@ public class Main {
     index = index + 1;
     processMvnTest(index);
     p.waitFor();
-  }
-
-  private static void processSettingsMap(String test, String config) {
-    Map<String, Object> configs = new HashMap<>();
-    String extractedInitial = config.substring(config.indexOf("("), config.lastIndexOf(")"));
-    System.out.println(extractedInitial);
-    String defaultPolicy = extractedInitial.substring(extractedInitial.indexOf("defaultPolicy=SamplingPolicy(") + 29, extractedInitial.indexOf("),"));
-    String[] defaultPolicyArr = defaultPolicy.split(", ");
-    Map<String, String> defaultPolicyMap = new HashMap<>();
-    for (String s : defaultPolicyArr) {
-      String[] split = s.split("=");
-      defaultPolicyMap.put(split[0], split[1]);
-    }
-    configs.put("default", defaultPolicyMap);
-    System.out.println(configs);
-    String services = extractedInitial.substring(extractedInitial.indexOf("services={") + 10, extractedInitial.indexOf("}"));
-    System.out.println(services);
-
-    List<String> matchList = new ArrayList<>();
-    Pattern regex = Pattern.compile("\\(([^()]*)\\)");
-    Matcher regexMatcher = regex.matcher(services);
-    while (regexMatcher.find()) {
-      matchList.add(regexMatcher.group(1));
-    }
-    for (String str : matchList) {
-      System.out.println(str);
-    }
-
-    List<String> orderedServiceList = new ArrayList<>();
-    String[] serviceNames = services.replaceAll("\\s*\\([^\\)]*\\)\\s*", " ").split(" , ");
-    for (String str : serviceNames) {
-      orderedServiceList.add(str.split("=")[0]);
-    }
-
-    List<Object> serviceList = new ArrayList<>();
-    for (int i = 0; i < matchList.size(); i++) {
-      Map<String, String> servicesMap = new HashMap<>();
-      servicesMap.put("name", "");
-      String[] split = matchList.get(i).split(", ");
-      servicesMap.put("name", orderedServiceList.get(i));
-      for (String s : split) {
-        String[] internalSplit = s.split("=");
-        servicesMap.put(internalSplit[0], internalSplit[1]);
-      }
-      serviceList.add(servicesMap);
-    }
-
-    System.out.println(serviceList);
-
-    configs.put("services", serviceList);
-
-    System.out.println(configs);
-    map.put(test, configs);
-    System.out.println(map);
   }
 
   private static void processMapping(String test, Map<String, Object> configMap, String module, String provider,
@@ -249,5 +196,47 @@ public class Main {
     map.put(test, moduleMap);
   }
 
+  private static void processSettingsMap(String test, String config) {
+    Map<String, Object> configs = new HashMap<>();
+    String extractedInitial = config.substring(config.indexOf("("), config.lastIndexOf(")"));
+    String defaultPolicy = extractedInitial.substring(extractedInitial.indexOf("defaultPolicy=SamplingPolicy(") + 29, extractedInitial.indexOf("),"));
+    String[] defaultPolicyArr = defaultPolicy.split(", ");
+    Map<String, String> defaultPolicyMap = new HashMap<>();
+    for (String s : defaultPolicyArr) {
+      String[] split = s.split("=");
+      defaultPolicyMap.put(split[0], split[1]);
+    }
+    configs.put("default", defaultPolicyMap);
+    String services = extractedInitial.substring(extractedInitial.indexOf("services={") + 10, extractedInitial.indexOf("}"));
+
+    List<String> matchList = new ArrayList<>();
+    Pattern regex = Pattern.compile("\\(([^()]*)\\)");
+    Matcher regexMatcher = regex.matcher(services);
+    while (regexMatcher.find()) {
+      matchList.add(regexMatcher.group(1));
+    }
+
+    List<String> orderedServiceList = new ArrayList<>();
+    String[] serviceNames = services.replaceAll("\\s*\\([^\\)]*\\)\\s*", " ").split(" , ");
+    for (String str : serviceNames) {
+      orderedServiceList.add(str.split("=")[0]);
+    }
+
+    List<Object> serviceList = new ArrayList<>();
+    for (int i = 0; i < matchList.size(); i++) {
+      Map<String, String> servicesMap = new HashMap<>();
+      servicesMap.put("name", "");
+      String[] split = matchList.get(i).split(", ");
+      servicesMap.put("name", orderedServiceList.get(i));
+      for (String s : split) {
+        String[] internalSplit = s.split("=");
+        servicesMap.put(internalSplit[0], internalSplit[1]);
+      }
+      serviceList.add(servicesMap);
+    }
+
+    configs.put("services", serviceList);
+    map.put(test, configs);
+  }
 
 }
