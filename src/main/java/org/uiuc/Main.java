@@ -100,6 +100,9 @@ public class Main {
       prev = next;
       next = bufReader.readLine();
     }
+    if (!map.containsKey(testCase)) {
+      map.put(testCase, new HashMap<>());
+    }
     index = index + 1;
     processMvnTest(index);
     p.waitFor();
