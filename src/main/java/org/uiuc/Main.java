@@ -6,15 +6,20 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.uiuc.AppConstants.*;
 import static org.uiuc.UtilHelper.copy;
 
 public class Main {
 
-  static Map<String, Map<String, Map<String, Map<String, Object>>>> map = new LinkedHashMap<>();
+  static Map<String, Object> map = new LinkedHashMap<>();
 
   public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -74,19 +79,22 @@ public class Main {
       if (next.contains(CTEST_PROPERTY_WRAPPER)) {
         storeProperty = new StringBuilder(next);
         processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), next, null, null,
-            null);
+                null);
       }
       if (next.contains(CTEST_SUB_PROPERTY_WRAPPER)) {
         processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(),
-            storeProperty.toString(), next, null, null);
+                storeProperty.toString(), next, null, null);
       }
       if (next.contains(CTEST_PROPERTY_RESET_WRAPPER)) {
         processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(), null, null, next,
-            null);
+                null);
       }
       if (next.contains(CTEST_SUB_PROPERTY_RESET_WRAPPER)) {
         processMapping(testCase, configMap, storeModule.toString(), storeProvider.toString(),
-            storeProperty.toString(), next, null, next);
+                storeProperty.toString(), next, null, next);
+      }
+      if (next.contains(CTEST_SETTINGS_MAP)) {
+        processSettingsMap(testCase, next);
       }
       prev = next;
       next = bufReader.readLine();
@@ -96,56 +104,110 @@ public class Main {
     p.waitFor();
   }
 
+  private static void processSettingsMap(String test, String config) {
+    Map<String, Object> configs = new HashMap<>();
+    String extractedInitial = config.substring(config.indexOf("("), config.lastIndexOf(")"));
+    System.out.println(extractedInitial);
+    String defaultPolicy = extractedInitial.substring(extractedInitial.indexOf("defaultPolicy=SamplingPolicy(") + 29, extractedInitial.indexOf("),"));
+    String[] defaultPolicyArr = defaultPolicy.split(", ");
+    Map<String, String> defaultPolicyMap = new HashMap<>();
+    for (String s : defaultPolicyArr) {
+      String[] split = s.split("=");
+      defaultPolicyMap.put(split[0], split[1]);
+    }
+    configs.put("default", defaultPolicyMap);
+    System.out.println(configs);
+    String services = extractedInitial.substring(extractedInitial.indexOf("services={") + 10, extractedInitial.indexOf("}"));
+    System.out.println(services);
+
+    List<String> matchList = new ArrayList<>();
+    Pattern regex = Pattern.compile("\\(([^()]*)\\)");
+    Matcher regexMatcher = regex.matcher(services);
+    while (regexMatcher.find()) {
+      matchList.add(regexMatcher.group(1));
+    }
+    for (String str : matchList) {
+      System.out.println(str);
+    }
+
+    List<String> orderedServiceList = new ArrayList<>();
+    String[] serviceNames = services.replaceAll("\\s*\\([^\\)]*\\)\\s*", " ").split(" , ");
+    for (String str : serviceNames) {
+      orderedServiceList.add(str.split("=")[0]);
+    }
+
+    List<Object> serviceList = new ArrayList<>();
+    for (int i = 0; i < matchList.size(); i++) {
+      Map<String, String> servicesMap = new HashMap<>();
+      servicesMap.put("name", "");
+      String[] split = matchList.get(i).split(", ");
+      servicesMap.put("name", orderedServiceList.get(i));
+      for (String s : split) {
+        String[] internalSplit = s.split("=");
+        servicesMap.put(internalSplit[0], internalSplit[1]);
+      }
+      serviceList.add(servicesMap);
+    }
+
+    System.out.println(serviceList);
+
+    configs.put("services", serviceList);
+
+    System.out.println(configs);
+    map.put(test, configs);
+    System.out.println(map);
+  }
+
   private static void processMapping(String test, Map<String, Object> configMap, String module, String provider,
-      String propKey, String subPropKey, String resetProp, String resetSubProp) {
+                                     String propKey, String subPropKey, String resetProp, String resetSubProp) {
 
     String moduleExtracted = (module == null || module.isEmpty()) ? null
-        : module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
+            : module.substring(module.indexOf(SEPARATOR) + 3, module.lastIndexOf(SEPARATOR));
 
     String providerExtracted = (provider == null || provider.isEmpty()) ? null
-        : provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
+            : provider.substring(provider.indexOf(SEPARATOR) + 3, provider.lastIndexOf(SEPARATOR));
 
     String propKeyExtracted = (propKey == null || propKey.isEmpty()) ? null
-        : propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
+            : propKey.substring(propKey.indexOf(SEPARATOR) + 3, propKey.lastIndexOf(SEPARATOR));
 
     String subPropKeyExtracted = (subPropKey == null || subPropKey.isEmpty()) ? null
-        : subPropKey.substring(subPropKey.indexOf(SEPARATOR) + 3, subPropKey.lastIndexOf(SEPARATOR));
+            : subPropKey.substring(subPropKey.indexOf(SEPARATOR) + 3, subPropKey.lastIndexOf(SEPARATOR));
 
     String resetPropKey = (resetProp == null || resetProp.isEmpty()) ? null
-        : resetProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetProp.lastIndexOf(SEPARATOR));
+            : resetProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetProp.lastIndexOf(SEPARATOR));
 
     String resetPropValue = (resetProp == null || resetProp.isEmpty()) ? null
-        : resetProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
+            : resetProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
             resetProp.lastIndexOf(SEPARATOR_ASTERISK));
 
-    if(moduleExtracted == null && providerExtracted == null) {
+    if (moduleExtracted == null && providerExtracted == null) {
       return;
     }
 
-    if (resetProp != null && map.containsKey(test) && module != null && map.get(test).containsKey(module)
-        && provider != null && map.get(test).get(module).containsKey(provider) && map.get(test).get(module)
-        .get(provider).containsKey(resetPropKey)) {
-      map.get(test).get(module).get(provider).put(resetPropKey, resetPropValue);
+    if (resetProp != null && map.containsKey(test) && module != null && ((Map) map.get(test)).containsKey(module)
+            && provider != null && ((Map) ((Map) map.get(test)).get(module)).containsKey(provider) && ((Map) ((Map) ((Map) map.get(test)).get(module))
+            .get(provider)).containsKey(resetPropKey)) {
+      ((Map) ((Map) ((Map) map.get(test)).get(module)).get(provider)).put(resetPropKey, resetPropValue);
       return;
     }
 
     String resetSubPropKey = (resetSubProp == null || resetSubProp.isEmpty()) ? null
-        : resetSubProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetSubProp.lastIndexOf(SEPARATOR));
+            : resetSubProp.substring(resetProp.indexOf(SEPARATOR) + 3, resetSubProp.lastIndexOf(SEPARATOR));
     String resetSubPropValue = (resetSubProp == null || resetSubProp.isEmpty()) ? null
-        : resetSubProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
+            : resetSubProp.substring(resetProp.indexOf(SEPARATOR_ASTERISK) + 3,
             resetSubProp.lastIndexOf(SEPARATOR_ASTERISK));
 
-    if (resetSubPropKey != null && map.containsKey(test) && module != null && map.get(test).containsKey(module)
-        && provider != null && map.get(test).get(module).containsKey(provider) && map.get(test).get(module)
-        .get(provider).containsKey(resetSubPropKey)) {
-      ((Map) map.get(test).get(module).get(provider).get("properties")).put(resetSubPropKey, resetSubPropValue);
+    if (resetSubPropKey != null && map.containsKey(test) && module != null && ((Map) map.get(test)).containsKey(module)
+            && provider != null && ((Map) ((Map) map.get(test)).get(module)).containsKey(provider) && ((Map) ((Map) ((Map) map.get(test)).get(module))
+            .get(provider)).containsKey(resetSubPropKey)) {
+      ((Map) ((Map) ((Map) ((Map) map.get(test)).get(module)).get(provider)).get("properties")).put(resetSubPropKey, resetSubPropValue);
       return;
     }
 
     String configStr = provider.substring(provider.indexOf("{") + 1, provider.lastIndexOf("}"));
 
     if (configStr.contains("properties={") && propKeyExtracted.equals("properties")
-        && subPropKeyExtracted != null) {
+            && subPropKeyExtracted != null) {
       String propertiesStr = configStr.substring(configStr.indexOf("{") + 1, configStr.indexOf("}"));
       configStr = configStr.replace(propertiesStr, "").replace("properties={}", "");
       String[] innerProp = propertiesStr.split(", ");
