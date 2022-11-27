@@ -20,7 +20,13 @@ public interface AppConstants {
 //          "oap-server/server-configuration/configuration-etcd>org.apache.skywalking.oap.server.configuration.etcd.ITEtcdConfigurationTest#shouldReadUpdated4Group",
 //          "oap-server/server-configuration/configuration-zookeeper>org.apache.skywalking.oap.server.configuration.zookeeper.it.ITZookeeperConfigurationTest#shouldReadUpdated",
 //          "oap-server/server-configuration/configuration-zookeeper>org.apache.skywalking.oap.server.configuration.zookeeper.it.ITZookeeperConfigurationTest#shouldReadUpdated4GroupConfig"
-          "oap-server/analyzer/agent-analyzer>org.apache.skywalking.oap.server.analyzer.provider.trace.TraceSamplingPolicyWatcherTest#testStaticConfigInit"
+          "oap-server/analyzer/agent-analyzer>org.apache.skywalking.oap.server.analyzer.provider.trace.TraceSamplingPolicyWatcherTest#testStaticConfigInit",
+          "oap-server/analyzer/agent-analyzer>org.apache.skywalking.oap.server.analyzer.provider.trace.TraceSamplingPolicyWatcherTest#testTraceLatencyThresholdDynamicUpdate",
+          "oap-server/analyzer/agent-analyzer>org.apache.skywalking.oap.server.analyzer.provider.trace.TraceSamplingPolicyWatcherTest#testTraceLatencyThresholdNotify",
+          "oap-server/analyzer/agent-analyzer>org.apache.skywalking.oap.server.analyzer.provider.trace.TraceSamplingPolicyWatcherTest#testDefaultSampleRateDynamicUpdate",
+          "oap-server/analyzer/agent-analyzer>org.apache.skywalking.oap.server.analyzer.provider.trace.TraceSamplingPolicyWatcherTest#testDefaultSampleRateNotify",
+          "oap-server/analyzer/agent-analyzer>org.apache.skywalking.oap.server.analyzer.provider.trace.TraceSamplingPolicyWatcherTest#testServiceSampleRateDynamicUpdate",
+          "oap-server/analyzer/agent-analyzer>org.apache.skywalking.oap.server.analyzer.provider.trace.TraceSamplingPolicyWatcherTest#testServiceSampleRateNotify"
   );
 
   String ERROR_MSG = "Error on exec() method";
