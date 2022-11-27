@@ -6,10 +6,10 @@ import java.util.List;
 public interface AppConstants {
 
   List<String> testCases = Arrays.asList(
-//          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig",
-//          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadStringTypeConfig",
-//          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadIntegerTypeConfig",
-//          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadBooleanTypeConfig",
+          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadConfig",
+          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadStringTypeConfig",
+          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadIntegerTypeConfig",
+          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadBooleanTypeConfig",
 //          "oap-server/server-starter>org.apache.skywalking.oap.server.starter.config.ApplicationConfigLoaderTestCase#testLoadSpecialStringTypeConfig",
 //          "oap-server/server-library/library-module>org.apache.skywalking.oap.server.library.module.ApplicationConfigurationTest#testBuildConfig",
 //          "oap-server/server-configuration/configuration-apollo>org.apache.skywalking.oap.server.configuration.apollo.ITApolloConfigurationTest#shouldReadUpdated",
