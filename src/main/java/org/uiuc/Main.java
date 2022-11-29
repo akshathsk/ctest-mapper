@@ -1,10 +1,17 @@
 package org.uiuc;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
+
+import java.util.Iterator;
+
 
 import static org.uiuc.AppConstants.*;
 import static org.uiuc.UtilHelper.copy;
@@ -23,16 +36,39 @@ public class Main {
 
   public static void main(String[] args) throws IOException, InterruptedException {
 
+    String destDir = args[0];
+
     int initialIndex = 0;
     processMvnTest(initialIndex);
+
+    Gson gson = new Gson();
+    String json = gson.toJson(map);
+    System.out.println(json);
+
+    List<String> list = new ArrayList<>();
+    Map<String, String> map = new HashMap<>();
+    try {
+      addKeys("", new ObjectMapper().readTree(json), map);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    System.out.println(map);
+    map.forEach((k,v) -> {
+      String str = k.split("#")[1];
+      System.out.println(str.substring(str.indexOf(".") + 1) + "    " + v + "    " + "test");
+      list.add(str.substring(str.indexOf(".") + 1) + "    " + v + "    " + "test");
+    });
+
+    FileWriter writer = new FileWriter(destDir + "/output.txt");
+    for(String str: list) {
+      writer.write(str + System.lineSeparator());
+    }
+    writer.close();
   }
 
   private static void processMvnTest(int index) throws IOException, InterruptedException {
 
     if (index == testCases.size()) {
-      Gson gson = new Gson();
-      String json = gson.toJson(map);
-      System.out.println(json);
       return;
     }
 
@@ -240,6 +276,27 @@ public class Main {
 
     configs.put("services", serviceList);
     map.put(test, configs);
+  }
+
+  private static void addKeys(String currentPath, JsonNode jsonNode, Map<String, String> map) {
+    if (jsonNode.isObject()) {
+      ObjectNode objectNode = (ObjectNode) jsonNode;
+      Iterator<Map.Entry<String, JsonNode>> iter = objectNode.fields();
+      String pathPrefix = currentPath.isEmpty() ? "" : currentPath + ".";
+
+      while (iter.hasNext()) {
+        Map.Entry<String, JsonNode> entry = iter.next();
+        addKeys(pathPrefix + entry.getKey(), entry.getValue(), map);
+      }
+    } else if (jsonNode.isArray()) {
+      ArrayNode arrayNode = (ArrayNode) jsonNode;
+      for (int i = 0; i < arrayNode.size(); i++) {
+        addKeys(currentPath + "[" + i + "]", arrayNode.get(i), map);
+      }
+    } else if (jsonNode.isValueNode()) {
+      ValueNode valueNode = (ValueNode) jsonNode;
+      map.put(currentPath, valueNode.asText());
+    }
   }
 
 }
