@@ -32,6 +32,7 @@ public interface AppConstants {
           "oap-server/server-configuration/configuration-nacos>org.apache.skywalking.oap.server.configuration.nacos.NacosConfigWatcherRegisterTest#shouldReadConfigs"
   );
 
+
   String ERROR_MSG = "Error on exec() method";
 
   String CTEST_MODULE = "[CTEST][getModuleConfiguration]";

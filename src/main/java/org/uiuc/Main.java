@@ -52,18 +52,41 @@ public class Main {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    System.out.println(map);
+
+    Map<String, List<String>> testToConfigList = new LinkedHashMap<>();
     map.forEach((k,v) -> {
-      String str = k.split("#")[1];
-      System.out.println(str.substring(str.indexOf(".") + 1) + "    " + v + "    " + "test");
-      list.add(str.substring(str.indexOf(".") + 1) + "    " + v + "    " + "test");
+      String[] strArr = k.split("#");
+      String str = strArr[1];
+      String testCase =  strArr[0] + "#" + str.substring(0, str.indexOf("."));
+      String confStr = strArr[1];
+      String config = confStr.substring(confStr.indexOf(".") + 1);
+      if(!testToConfigList.containsKey(testCase)) {
+        List<String> confList = new ArrayList<>();
+        confList.add(config);
+        testToConfigList.put(testCase, confList);
+      } else {
+        testToConfigList.get(testCase).add(config);
+      }
     });
 
-    FileWriter writer = new FileWriter(destDir + "/output.txt");
+    System.out.println(testToConfigList);
+
+    FileWriter writer1 = new FileWriter(destDir + "/test-to-config.txt");
     for(String str: list) {
-      writer.write(str + System.lineSeparator());
+      writer1.write(str + System.lineSeparator());
     }
-    writer.close();
+    writer1.close();
+
+    map.forEach((k,v) -> {
+      String str = k.split("#")[1];
+      list.add(str.substring(str.indexOf(".") + 1) + "\t" + v + "\t" + "description");
+    });
+
+    FileWriter writer2 = new FileWriter(destDir + "/all-config.txt");
+    for(String str: list) {
+      writer2.write(str + System.lineSeparator());
+    }
+    writer2.close();
   }
 
   private static void processMvnTest(int index) throws IOException, InterruptedException {
