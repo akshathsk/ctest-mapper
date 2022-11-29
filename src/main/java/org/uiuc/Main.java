@@ -45,6 +45,10 @@ public class Main {
     String json = gson.toJson(map);
     System.out.println(json);
 
+    FileWriter writer3 = new FileWriter(destDir + "/test-to-config.txt");
+    writer3.write(json);
+    writer3.close();
+
     List<String> list = new ArrayList<>();
     Map<String, String> map = new HashMap<>();
     try {
@@ -69,12 +73,10 @@ public class Main {
       }
     });
 
-    System.out.println(testToConfigList);
-
-    FileWriter writer1 = new FileWriter(destDir + "/test-to-config.txt");
-    for(String str: list) {
-      writer1.write(str + System.lineSeparator());
-    }
+    String jsonTestToConfigList = gson.toJson(testToConfigList);
+    System.out.println(jsonTestToConfigList);
+    FileWriter writer1 = new FileWriter(destDir + "/test-to-config-flat.txt");
+    writer1.write(jsonTestToConfigList);
     writer1.close();
 
     map.forEach((k,v) -> {
