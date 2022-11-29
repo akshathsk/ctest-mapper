@@ -15,9 +15,11 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +51,6 @@ public class Main {
     writer3.write(json);
     writer3.close();
 
-    List<String> list = new ArrayList<>();
     Map<String, String> map = new HashMap<>();
     try {
       addKeys("", new ObjectMapper().readTree(json), map);
@@ -79,13 +80,14 @@ public class Main {
     writer1.write(jsonTestToConfigList);
     writer1.close();
 
+    Set<String> set = new HashSet<>();
     map.forEach((k,v) -> {
       String str = k.split("#")[1];
-      list.add(str.substring(str.indexOf(".") + 1) + "\t" + v + "\t" + "description");
+      set.add(str.substring(str.indexOf(".") + 1) + "\t" + v + "\t" + "description");
     });
 
     FileWriter writer2 = new FileWriter(destDir + "/all-config.txt");
-    for(String str: list) {
+    for(String str: set) {
       writer2.write(str + System.lineSeparator());
     }
     writer2.close();
